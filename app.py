@@ -1,5 +1,7 @@
 from flask import Flask, jsonify, request
 import sqlite3
+import hashlib
+
 app = Flask(__name__)
 
 def get_db_connection():
@@ -20,6 +22,13 @@ def init_db():
                 price REAL NOT NULL
                 )
                  """)
+    conn.execute("""
+                    CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT UNIQUE NOT NULL,
+                    password TEXT NOT NULL
+                    )
+                     """)
     conn.commit()
     conn.close()
     return jsonify({"message": "Database Init complete"})
@@ -53,6 +62,48 @@ def add_products():
         "price":price
     }
     return jsonify({"message": "Product added", "product": new_product}), 201
+
+@app.route("/register", methods=["POST"])
+def register():
+    data = request.get_json()
+    username = data.get("username")
+    password = data.get("password")
+
+    if not username or not password:
+        return jsonify({"message": "Missing username or password"}), 400
+
+    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
+        conn.commit()
+        conn.close()
+        return jsonify({"message": "User registered successfully"}), 201
+    except sqlite3.IntegrityError:
+        return jsonify({"message": "Username already exists"}), 400
+
+@app.route("/login", methods=["POST"])
+def login():
+    data = request.get_json()
+    username = data.get("username")
+    password = data.get("password")
+
+    if not username or not password:
+        return jsonify({"error": "Missing username or password"}), 400
+
+    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+    conn = get_db_connection()
+    user = conn.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, hashed_password)).fetchone()
+    conn.close()
+
+    if user:
+        return jsonify({"message":f"Welcome {username}"})
+    else:
+        return jsonify({"error": "Invalid credentials"}), 401
+
+
 
 if __name__ =="__main__":
     with app.app_context():
