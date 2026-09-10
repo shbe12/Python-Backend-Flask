@@ -3,5 +3,35 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title> FLASK API CLIENT </title>
+
+  <style>
+    body { font-family: sans-serif; margin: 2rem}
+    button, input { margin: 0.5rem 0; padding: 0.5rem;}
+    #products {margin-top: 1rem;}
+  </style>
 </head>
+
+<body>
+
+<h1> Flask api webclient </h1>
+<button onclick="fetchProducts()">Fetch Products</button>
+<div id = "products"></div>
+
+<hr />
+
+<h2> Register new user </h2>
+<input type="'text" id="regUsername" placeholder="Username"/><br />
+<input type="password" id="regPassword" placeholder="Password"/><br />
+<button onclick="registerUser()">Register</button>
+<div id="registerMessage"></div>
+
+<script>
+  const BASE_URL = "https://python-backend-flask-6ane.onrender.com";
+
+  function fetchProducts() {
+    document.getElementById("products").innerText = "Loading..."
+  }
+</script>
+</body>
 </html>
