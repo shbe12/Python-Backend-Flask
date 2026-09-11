@@ -64,6 +64,10 @@ Protected endpoints require an `Authorization: Bearer <API_TOKEN>` header, where
 
 6. Open `web_client.html` in a browser to try the API (update `BASE_URL` in the script if testing against a local server instead of the deployed one).
 
+## Testing
+
+The API was tested using [Postman](https://www.postman.com/) to verify each endpoint (`/register`, `/login`, `/products`), including the token-protected `POST /products` route with the `Authorization: Bearer <API_TOKEN>` header.
+
 ## Deployment
 
 This project is configured for deployment on [Render](https://render.com) using Gunicorn (see `Procfile`). Set the `API_TOKEN` environment variable in your Render dashboard before deploying.
